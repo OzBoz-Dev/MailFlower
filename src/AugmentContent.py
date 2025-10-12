@@ -31,7 +31,7 @@ def get_extra_content(company_name:str, extra_considerations:str) -> str:
     return str(response.message.content)
 
 def main():
-    print(get_extra_content("Lockheed Martin", "Many of our students speak highly about Lockheed's CWEP program"))
+    print(get_extra_content("Streamline Technologies", "Orlando-based company providing water simulation services"))
 
 if __name__ == "__main__":
     main()

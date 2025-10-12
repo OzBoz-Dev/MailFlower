@@ -1,5 +1,6 @@
 import base64
-from email.message import EmailMessage
+import ExtraContent
+from email.mime.application import MIMEApplication
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -26,7 +27,6 @@ class MessageContent():
       self.company = company
 
 def main():
-
   # Get the credentials
   creds = validate_creds()
   if creds is None:
@@ -36,17 +36,25 @@ def main():
   try:
     # Call the Gmail API
     service = build("gmail", "v1", credentials=creds)
-    
-    
-
+    create_draft(service, "abbabababababab")
 
   except HttpError as error:
     print(f"An error occurred: {error}")
 
 def create_draft(service, csv_line:str):
+    # Message content class
     content = MessageContent("ozairboss2005@gmail.com", "Ozair", "Ahmed", "Mr.", "OzBoz Industries")
+
+    # Open ACM Logo file as binary
+    with open("logo.png", "rb") as f:
+      logo_data = f.read()
+    
+    # Open Outreach PDF file as binary
+    with open("Outreach_Presentation.pdf", "rb") as f:
+      presentation_data = f.read()
+
     # Create message
-    encoded_message = create_message(content)
+    encoded_message = create_message(content, logo_data, presentation_data)
 
     # Put message into draft form and execute making a draft
     draft_message = {"message": {"raw" : encoded_message}}
@@ -59,28 +67,35 @@ def create_draft(service, csv_line:str):
 
     print(f'Draft id: {draft["id"]}\nDraft message: {draft["message"]}')
 
-def create_message(content: MessageContent) -> str:
+def create_message(content: MessageContent, logo_data, presentation_data) -> str:
+    # Multipart allows putting multiple types of data
     message = MIMEMultipart("related")
     message["To"] = f"{content.email}"
     message["From"] = "ozairboss2005@gmail.com"
     message["Subject"] = f"{content.company} x ACM@UCF Collaboration"
 
-    message_html = MIMEText(create_body_text(content), "html")
+    # HTML Body content
+    message_html = MIMEText(create_body_text(content, ExtraContent.get_extra_content(content)), "html")
     message.attach(message_html)
 
-    with open("logo.png", "rb") as f:
-      logo_data = f.read()
-    
+    # Inlined logo image
     logo = MIMEImage(logo_data, name="logo.png")
     logo.add_header("Content_ID", "<logo>")
     logo.add_header("Content_Disposition", "inline", filename="logo.png")
     logo.add_header("X-Attachment-Id", "logo")
     message.attach(logo)
 
+    # Attached presentation PDF
+    presentation = MIMEApplication(presentation_data, _subtype="pdf", name="Outreach_Presentation.pdf")
+    presentation.add_header("Content_Disposition", "attachment", filename="Outreach_Presentation.pdf")
+    message.attach(presentation)
+
+    # Encode message to base64
     encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
     return encoded_message
 
-def create_body_text(c: MessageContent) -> str:
+# Wow I love HTML
+def create_body_text(c: MessageContent, extra_content:str) -> str:
     return  f"""
     <html>
     <body>
@@ -94,7 +109,9 @@ def create_body_text(c: MessageContent) -> str:
     We seek to replicate that mission here at our ACM student chapter, leaving a long-lasting impact on UCF's research ecosystem and 
     supporting students through their growth of technical, leadership, and soft skills.
     </span></p>
-    <p>PLEASE SPONSOR US PLEAAAASEPLEEEEASE</p>
+    <p><span style="font-family: Georgia, serif; font-size: 11pt;">
+    {extra_content}
+    </span></p>
     <br>
     <p><span style="font-family: Georgia, serif; font-size: 12pt;">Regards,</span></p>
     <p><span style="font-family: Georgia, serif; font-size: 16pt;"><b>{SENDER_NAME}</b></p></span>
@@ -105,6 +122,7 @@ def create_body_text(c: MessageContent) -> str:
     </html> 
 """
 
+# From the docs
 def validate_creds():
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is

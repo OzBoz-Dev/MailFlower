@@ -1,4 +1,6 @@
 credentials.json
 token.json
 Outreach_Presentation.pdf
+ollama_key.txt
+.env
 __pycache__/

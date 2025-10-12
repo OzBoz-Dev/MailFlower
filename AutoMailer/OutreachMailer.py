@@ -19,12 +19,13 @@ SENDER_NAME = "Ozair Ahmed"
 SENDER_POSITION = "Outreach Director"
 
 class MessageContent():
-    def __init__(self, email:str, firstname:str, lastname:str, title:str, company:str):
+    def __init__(self, email:str, firstname:str, lastname:str, title:str, company:str, considerations:str):
       self.email = email
       self.firstname = firstname
       self.lastname = lastname
       self.title = title
       self.company = company
+      self.considerations = considerations
 
 def main():
   # Get the credentials
@@ -43,7 +44,7 @@ def main():
 
 def create_draft(service, csv_line:str):
     # Message content class
-    content = MessageContent("ozairboss2005@gmail.com", "Ozair", "Ahmed", "Mr.", "OzBoz Industries")
+    content = MessageContent("ozairboss2005@gmail.com", "Ozair", "Ahmed", "Mr.", "OzBoz Industries", "")
 
     # Open ACM Logo file as binary
     with open("logo.png", "rb") as f:
@@ -75,7 +76,7 @@ def create_message(content: MessageContent, logo_data, presentation_data) -> str
     message["Subject"] = f"{content.company} x ACM@UCF Collaboration"
 
     # HTML Body content
-    message_html = MIMEText(create_body_text(content, ExtraContent.get_extra_content(content)), "html")
+    message_html = MIMEText(create_body_text(content, ExtraContent.get_extra_content(content.company, content.considerations)), "html")
     message.attach(message_html)
 
     # Inlined logo image
@@ -112,6 +113,8 @@ def create_body_text(c: MessageContent, extra_content:str) -> str:
     <p><span style="font-family: Georgia, serif; font-size: 11pt;">
     {extra_content}
     </span></p>
+    <br>
+    <p><span style="font-family: Georgia, serif; font-size: 11pt;">Thank you for your time, and I look forward to your response.</span></p>
     <br>
     <p><span style="font-family: Georgia, serif; font-size: 12pt;">Regards,</span></p>
     <p><span style="font-family: Georgia, serif; font-size: 16pt;"><b>{SENDER_NAME}</b></p></span>

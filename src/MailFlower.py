@@ -1,5 +1,5 @@
 import base64
-import ExtraContent
+import src.AugmentContent as AugmentContent
 from email.mime.application import MIMEApplication
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
@@ -76,7 +76,7 @@ def create_message(content: MessageContent, logo_data, presentation_data) -> str
     message["Subject"] = f"{content.company} x ACM@UCF Collaboration"
 
     # HTML Body content
-    message_html = MIMEText(create_body_text(content, ExtraContent.get_extra_content(content.company, content.considerations)), "html")
+    message_html = MIMEText(create_body_text(content, AugmentContent.get_extra_content(content.company, content.considerations)), "html")
     message.attach(message_html)
 
     # Inlined logo image

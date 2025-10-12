@@ -128,6 +128,7 @@ def main():
         for key in row:
            print(key + ":" + row[key])
         create_draft(service, content)
+        print()
     
 
 if __name__ == "__main__":

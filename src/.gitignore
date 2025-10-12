@@ -3,4 +3,5 @@ token.json
 Outreach_Presentation.pdf
 ollama_key.txt
 .env
+PromptsAndStuff.py
 __pycache__/

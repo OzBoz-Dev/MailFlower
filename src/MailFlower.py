@@ -6,6 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import os.path
 import PromptsAndStuff
+import csv
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -17,6 +18,7 @@ SCOPES = ["https://www.googleapis.com/auth/gmail.compose"]
 
 
 class MessageContent():
+
     def __init__(self, email:str, firstname:str, lastname:str, title:str, company:str, considerations:str):
       self.email = email
       self.firstname = firstname
@@ -25,7 +27,7 @@ class MessageContent():
       self.company = company
       self.considerations = considerations
 
-def main():
+def init():
   # Get the credentials
   creds = validate_creds()
   if creds is None:
@@ -35,15 +37,12 @@ def main():
   try:
     # Call the Gmail API
     service = build("gmail", "v1", credentials=creds)
-    create_draft(service, "abbabababababab")
+    return service
 
   except HttpError as error:
     print(f"An error occurred: {error}")
 
-def create_draft(service, csv_line:str):
-    # Message content class
-    content = MessageContent("ozairboss2005@gmail.com", "John", "Doe", "Mr.", "Lockheed Martin", "No extra considerations")
-
+def create_draft(service, content:MessageContent):
     # Open ACM Logo file as binary
     with open("logo.png", "rb") as f:
       logo_data = f.read()
@@ -116,6 +115,21 @@ def validate_creds():
       with open("token.json", "w") as token:
         token.write(creds.to_json())
     return creds
+
+def main():
+    service = init()
+
+    # Loop through each item in the csv and create a draft email for each contact
+    with open("contacts.csv", "r") as f:
+       csv_reader = csv.DictReader(f)
+       for row in csv_reader:
+        content = MessageContent(row["email"], row["firstname"], row["lastname"], row["title"], row["company"], row["considerations"])
+        print("Creating draft for:")
+        for key in row:
+           print(key + ":" + row[key])
+        create_draft(service, content)
+        print()
+    
 
 if __name__ == "__main__":
   main()

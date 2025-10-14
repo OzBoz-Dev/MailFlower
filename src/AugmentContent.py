@@ -1,6 +1,7 @@
-from ollama import chat
 import PromptsAndStuff
+from ollama import chat
 from ollama import ChatResponse
+
 
 # A response loop so that the user can vet and provide feedback to responses
 def get_extra_content(company_name:str, extra_considerations:str) -> str:
@@ -15,6 +16,7 @@ def get_extra_content(company_name:str, extra_considerations:str) -> str:
         else:
             feedback = input("Give feedback on this response: ")
         print()
+
 
 def generate_response(company_name:str, extra_considerations:str, previous_response:str, feedback:str) -> str:
     response:ChatResponse = chat(model="gemma3:4b", messages=[
@@ -42,9 +44,11 @@ def generate_response(company_name:str, extra_considerations:str, previous_respo
     )
     return str(response.message.content)
 
-# For testing purposes only
+
+# For testing purposes only. Run this file to test your prompts
 def main():
-    print(get_extra_content("Blue Origin", "We were previously sponsored by them for a project involving an autonomous drone"))
+    print(get_extra_content("OzBoz Industries", "They are furthering research in quantum computing"))
+
 
 if __name__ == "__main__":
     main()

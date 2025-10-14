@@ -6,7 +6,7 @@ An automated Email drafting tool for the Gmail API, with AI message personalizat
 
 Pull this GitHub repository:
 ```
-git clone --depth 1 https://github.com/OzBoz-Dev/MailFlower/
+git clone --depth 1 https://github.com/OzBoz-Dev/MailFlower.git
 ```
 
 Install the required packages

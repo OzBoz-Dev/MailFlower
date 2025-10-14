@@ -1,10 +1,10 @@
-from MailFlower import MessageContent
-
 """
 This is a template where you can fill in the HTML body text and ollama prompts. The actual
 information is obfuscated in PromptsAndStuff.py. Simply remove the _template at the end
 of the file and you can use this instead.
 """
+
+from MailFlower import MessageContent
 
 SENDER_NAME = "John Doe"
 SENDER_POSITION = "Outreach Director"

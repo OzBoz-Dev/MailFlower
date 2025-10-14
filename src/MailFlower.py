@@ -1,12 +1,12 @@
-import base64
+import PromptsAndStuff
 import AugmentContent
+import base64
+import csv
+import os.path
 from email.mime.application import MIMEApplication
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import os.path
-import PromptsAndStuff
-import csv
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -44,11 +44,11 @@ def init():
 
 def create_draft(service, content:MessageContent):
     # Open ACM Logo file as binary
-    with open("logo.png", "rb") as f:
+    with open("../assets/logo.png", "rb") as f:
       logo_data = f.read()
     
     # Open Outreach PDF file as binary
-    with open("Outreach_Presentation.pdf", "rb") as f:
+    with open("../assets/Outreach_Presentation.pdf", "rb") as f:
       presentation_data = f.read()
 
     # Create message
@@ -100,19 +100,19 @@ def validate_creds():
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists("token.json"):
-      creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    if os.path.exists("../secrets/token.json"):
+      creds = Credentials.from_authorized_user_file("../secrets/token.json", SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
       if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
       else:
         flow = InstalledAppFlow.from_client_secrets_file(
-            "credentials.json", SCOPES
+            "../secrets/credentials.json", SCOPES
         )
         creds = flow.run_local_server(port=0)
       # Save the credentials for the next run
-      with open("token.json", "w") as token:
+      with open("../secrets/token.json", "w") as token:
         token.write(creds.to_json())
     return creds
 
@@ -120,13 +120,15 @@ def main():
     service = init()
 
     # Loop through each item in the csv and create a draft email for each contact
-    with open("contacts.csv", "r") as f:
-       csv_reader = csv.DictReader(f)
-       for row in csv_reader:
+    with open("../assets/contacts.csv", "r") as f:
+      csv_reader = csv.DictReader(f)
+      for row in csv_reader:
+        if row["sent"] == "yes":
+          continue
         content = MessageContent(row["email"], row["firstname"], row["lastname"], row["title"], row["company"], row["considerations"])
         print("Creating draft for:")
         for key in row:
-           print(key + ":" + row[key])
+          print(key + ":" + row[key])
         create_draft(service, content)
         print()
     

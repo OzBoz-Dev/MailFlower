@@ -1,8 +1,2 @@
-credentials.json
-token.json
-Outreach_Presentation.pdf
-ollama_key.txt
-.env
 PromptsAndStuff.py
-contacts.csv
 __pycache__/

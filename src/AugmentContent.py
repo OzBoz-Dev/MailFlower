@@ -1,5 +1,5 @@
-from ollama import chat
 import PromptsAndStuff
+from ollama import chat
 from ollama import ChatResponse
 
 # A response loop so that the user can vet and provide feedback to responses
